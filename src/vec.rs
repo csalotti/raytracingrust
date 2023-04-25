@@ -53,6 +53,17 @@ impl Vec3 {
             (-1.0) * in_unit_sphere
         }
     }
+
+    pub fn random_in_unit_disk() -> Vec3 {
+        let mut rng = rand::thread_rng();
+
+        loop {
+            let p = Vec3::new(rng.gen_range(-1.0..1.0), rng.gen_range(-1.0..1.0), 0.0);
+            if p.length() < 1.0 {
+                return p
+            }
+        }
+    }
   
     // Getters
     pub fn x(self) -> f64 {
@@ -95,14 +106,14 @@ impl Vec3 {
         self[0].abs() < EPS && self[1].abs() < EPS && self[2].abs() < EPS
     }
 
-    pub fn refect(self, normal: Vec3) -> Vec3 {
+    pub fn reflect(self, normal: Vec3) -> Vec3 {
        self - 2.0 * self.dot(normal) * normal 
     }
 
-    pub fn refraction(self, normal: Vec3, etai_over_etat: f64) -> Vec3 {
-        let cos_theta = (-1.0 * self).dot(normal).min(1.0);
+    pub fn refract(self, normal: Vec3, etai_over_etat: f64) -> Vec3 {
+        let cos_theta = ((-1.0) * self).dot(normal).min(1.0);
         let r_out_perp = etai_over_etat * (self + cos_theta * normal);
-        let r_out_parallel = -(-1.0 - r_out_perp.length().powi(2)).abs().sqrt() * normal; 
+        let r_out_parallel = -(1.0 - r_out_perp.length().powi(2)).abs().sqrt() * normal; 
         r_out_perp + r_out_parallel
     }
 
