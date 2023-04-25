@@ -32,7 +32,7 @@ impl Hit for Sphere {
         // 𝑡^2𝐛⋅𝐛+2𝑡𝐛⋅(𝐀−𝐂)+(𝐀−𝐂)⋅(𝐀−𝐂)−𝑟^2=0 
         let oc = r.origin() - self.center;
         let a = r.direction().length().powi(2);
-        let half_b = oc.dot(&r.direction());
+        let half_b = oc.dot(r.direction());
         let c = oc.length().powi(2) - self.radius.powi(2);
        
         // By quadratic resolution : 
@@ -63,7 +63,7 @@ impl Hit for Sphere {
 
         // Inwards or outwards attribution by dot product result
         let outward_normal = (rec.p - self.center)/ self.radius;
-        rec.set_face_normal(r, &outward_normal);
+        rec.set_face_normal(r, outward_normal);
 
         Some(rec)
     } 

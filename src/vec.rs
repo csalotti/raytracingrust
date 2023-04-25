@@ -47,7 +47,7 @@ impl Vec3 {
 
     pub fn random_in_hemisphere(normal: Vec3) -> Vec3 {
         let in_unit_sphere =Vec3::random_in_unit_sphere();
-        if in_unit_sphere.dot(&normal) > 0.0 {
+        if in_unit_sphere.dot(normal) > 0.0 {
             in_unit_sphere
         } else {
             (-1.0) * in_unit_sphere
@@ -55,28 +55,28 @@ impl Vec3 {
     }
   
     // Getters
-    pub fn x(&self) -> f64 {
+    pub fn x(self) -> f64 {
         self[0]
     }
 
-    pub fn y(&self) -> f64 {
+    pub fn y(self) -> f64 {
         self[1]
     }
 
-    pub fn z(&self) -> f64 {
+    pub fn z(self) -> f64 {
         self[2]
     } 
 
     // Utilities
-    pub fn dot(&self, other : &Vec3) -> f64 {
+    pub fn dot(self, other : Vec3) -> f64 {
         self[0] * other[0] + self[1] * other[1] + self[2] * other[2]
     }
 
-    pub fn length(&self) -> f64 {
+    pub fn length(self) -> f64 {
         self.dot(self).sqrt()
     }
 
-    pub fn cross(&self, other: &Vec3) -> Vec3 {
+    pub fn cross(&self, other: Vec3) -> Vec3 {
         Vec3 {
             e: [
                 self[1] * other[2] - self[2] * other[1],
@@ -90,13 +90,20 @@ impl Vec3 {
         self / self.length()
     }
 
-    pub fn near_zero(&self) -> bool{
+    pub fn near_zero(self) -> bool{
         const EPS: f64 = 1.0e-8;
         self[0].abs() < EPS && self[1].abs() < EPS && self[2].abs() < EPS
     }
 
-    pub fn refect(&self, normal: &Vec3) -> Vec3 {
-       *self - 2.0 * self.dot(normal) * *normal 
+    pub fn refect(self, normal: Vec3) -> Vec3 {
+       self - 2.0 * self.dot(normal) * normal 
+    }
+
+    pub fn refraction(self, normal: Vec3, etai_over_etat: f64) -> Vec3 {
+        let cos_theta = (-1.0 * self).dot(normal).min(1.0);
+        let r_out_perp = etai_over_etat * (self + cos_theta * normal);
+        let r_out_parallel = -(-1.0 - r_out_perp.length().powi(2)).abs().sqrt() * normal; 
+        r_out_perp + r_out_parallel
     }
 
 }
@@ -216,7 +223,7 @@ impl Display for Vec3 {
 // Color utilities
 
 impl Color {
-    pub fn format_color(&self, samples_per_pixels: u64) -> String {
+    pub fn format_color(self, samples_per_pixels: u64) -> String {
         let ir = (256.0 * (self[0] / (samples_per_pixels as f64)).sqrt().clamp(0.0, 0.999)) as u64;
         let ig = (256.0 * (self[1] / (samples_per_pixels as f64)).sqrt().clamp(0.0, 0.999)) as u64;
         let ib = (256.0 * (self[2] / (samples_per_pixels as f64)).sqrt().clamp(0.0, 0.999)) as u64;
